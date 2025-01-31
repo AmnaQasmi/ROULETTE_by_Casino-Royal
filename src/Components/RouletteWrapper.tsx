@@ -1,10 +1,12 @@
+'use client'
 import React from "react";
 import Board from "./Board";
 import Wheel from "./Wheel";
 import { Button } from '@mantine/core';
 import { Timer } from "easytimer.js";
+// import {  io } from '../../server/server';
+import { io } from 'socket.io-client';
 import classNames from "classnames";
-import { io } from "socket.io-client";
 import ProgressBarRound from "./ProgressBar";
 import { Item, PlacedChip, RouletteWrapperState, GameData, GameStages } from "./Global";
 
@@ -52,14 +54,14 @@ class RouletteWrapper extends React.Component<any, any> {
         this.placeBet = this.placeBet.bind(this);
         this.clearBet = this.clearBet.bind(this);
 
-        this.socketServer = io("http://localhost:8000");
+        this.socketServer = io("http://localhost:8000");  // ✅ io is now correctly imported
     }
 
     componentDidMount() {
         this.socketServer.open();
         this.socketServer.on('stage-change', (data: string) => {
             console.log("Stage Change Data Received:", data);
-            var gameData = JSON.parse(data) as GameData;
+            let gameData = JSON.parse(data) as GameData;
             this.setGameData(gameData);
         });
         this.socketServer.on("connect", () => {
@@ -71,38 +73,56 @@ class RouletteWrapper extends React.Component<any, any> {
     }
 
     componentWillUnmount() {
-        this.socketServer.close();
+        if (this.socketServer) {
+            this.socketServer.off('stage-change');
+            this.socketServer.off('connect');
+            this.socketServer.close();
+        }
     }
 
+    // setGameData(gameData: GameData) {
+    //     console.log("Game Data Received:", gameData);
+
+    //     if (gameData.stage === GameStages.NO_MORE_BETS) {
+    //         this.setState({
+    //             endTime: 35,
+    //             progressCountdown: 35 - gameData.time_remaining,
+    //             number: { next: gameData.value },
+    //             stage: gameData.stage,
+    //             time_remaining: gameData.time_remaining,
+    //         });
+    //     } else if (gameData.stage === GameStages.WINNERS) {
+    //         console.log("Winners Data:", gameData.wins);
+    //         this.setState({
+    //             endTime: 59,
+    //             progressCountdown: 59 - gameData.time_remaining,
+    //             winners: gameData.wins || [],
+    //             stage: gameData.stage,
+    //             time_remaining: gameData.time_remaining,
+    //             history: gameData.history || [],
+    //         });
+    //     } else {
+    //         this.setState({
+    //             endTime: 25,
+    //             progressCountdown: 25 - gameData.time_remaining,
+    //             stage: gameData.stage,
+    //             time_remaining: gameData.time_remaining,
+    //         });
+    //     }
+    // }
     setGameData(gameData: GameData) {
         console.log("Game Data Received:", gameData);
 
-        if (gameData.stage === GameStages.NO_MORE_BETS) {
-            this.setState({
-                endTime: 35,
-                progressCountdown: 35 - gameData.time_remaining,
-                number: { next: gameData.value },
-                stage: gameData.stage,
-                time_remaining: gameData.time_remaining,
-            });
-        } else if (gameData.stage === GameStages.WINNERS) {
-            console.log("Winners Data:", gameData.wins);
-            this.setState({
-                endTime: 59,
-                progressCountdown: 59 - gameData.time_remaining,
-                winners: gameData.wins || [],
-                stage: gameData.stage,
-                time_remaining: gameData.time_remaining,
-                history: gameData.history || [],
-            });
-        } else {
-            this.setState({
-                endTime: 25,
-                progressCountdown: 25 - gameData.time_remaining,
-                stage: gameData.stage,
-                time_remaining: gameData.time_remaining,
-            });
-        }
+        this.setState((prevState: { number: { next: any; }; winners: any; history: any; }) => ({
+            ...prevState,
+            endTime: gameData.stage === GameStages.WINNERS ? 59 : gameData.stage === GameStages.NO_MORE_BETS ? 35 : 25,
+            progressCountdown: gameData.endTime - gameData.time_remaining,
+            number: { next: gameData.value || prevState.number.next },
+            winners: gameData.stage === GameStages.WINNERS ? gameData.wins || [] : prevState.winners,
+            history: gameData.stage === GameStages.WINNERS ? gameData.history || prevState.history : prevState.history,
+            stage: gameData.stage,
+            time_remaining: gameData.time_remaining,
+        }));
     }
 
     onCellClick(item: Item) {
@@ -144,17 +164,18 @@ class RouletteWrapper extends React.Component<any, any> {
     }
 
     onSpinClick() {
-        const userNumber = this.numberRef!.current!.value;
-        console.log("User Input Number:", userNumber); // For Debugging
+        const userNumber = this.numberRef?.current?.value;
+        console.log("User Input Number:", userNumber);
 
-        // Randomly generate the next ball number
-        const randomBallNumber = Math.floor(Math.random() * this.rouletteWheelNumbers.length);
+        // Select a random number from the roulette numbers
+        const randomIndex = Math.floor(Math.random() * this.rouletteWheelNumbers.length);
+        const randomBallNumber = this.rouletteWheelNumbers[randomIndex];
+
         console.log("Random Ball Number:", randomBallNumber);
 
-        // Update the state with the generated number
-        this.setState({ 
+        this.setState({
             number: { next: randomBallNumber },
-            history: [...this.state.history, randomBallNumber], // Maintain history of spins
+            history: [...this.state.history, randomBallNumber],
         });
     }
 
@@ -184,15 +205,13 @@ class RouletteWrapper extends React.Component<any, any> {
                             <tr>
                                 <td className="winnersBoard">
                                     <div className="winnerItemHeader font-[Kings]">WINNERS</div>
-                                    {this.state.winners.length > 0 ? (
-                                        this.state.winners.map((entry, index) => (
-                                            <div key={index} className="winnerItem">
-                                                {index + 1}. {entry.username} won ${entry.sum}
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <div className="font-bold text-xl text-[#877337] font-[Kings]">No winners yet</div>
-                                    )}
+                                    {this.state.winners.map((entry, index) => (
+                                        <div key={entry.username || index} className="winnerItem">
+                                            {index + 1}. {entry.username} won ${entry.sum}
+                                        </div>
+                                    ))}
+
+                                    {/* <div className="font-bold text-xl text-[#877337] font-[Kings]">No winners yet</div> */}
                                 </td>
                                 <td>
                                     <Wheel
@@ -204,28 +223,32 @@ class RouletteWrapper extends React.Component<any, any> {
                                     <div className="winnerHistory">
                                         {this.state.history.map((entry, index) => (
                                             <div
-                                                key={index}
+                                                key={`history-${index}`}
                                                 className={
-                                                    entry === 0
-                                                        ? "green"
-                                                        : this.blackNumbers.includes(entry)
-                                                            ? "black"
-                                                            : "red"
+                                                    entry === 0 ? "green" : this.blackNumbers.includes(entry) ? "black" : "red"
                                                 }
                                             >
                                                 {entry}
                                             </div>
                                         ))}
+
                                     </div>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+                    <div>
+                        <h2>Next Number: {this.state.number.next}</h2>
+                        <input className="number" ref={this.numberRef} />
+                        <button className="spin" onClick={this.onSpinClick}>Spin</button>
+                    </div>
+                    <br />
                     <Board
                         onCellClick={this.onCellClick}
                         chipsData={this.state.chipsData}
                         rouletteData={this.state.rouletteData}
-                    />
+                        />
+                        {/* console.log("Board Props:", this.state.chipsData, this.state.rouletteData); */}
                 </div>
                 <div className="progressBar">
                     <ProgressBarRound
@@ -233,11 +256,6 @@ class RouletteWrapper extends React.Component<any, any> {
                         maxDuration={this.state.endTime}
                         currentDuration={this.state.time_remaining}
                     />
-                </div>
-                <div>
-                    <h2>Next Number: {this.state.number.next}</h2>
-                    <input className="number" ref={this.numberRef} />
-                    <button className="spin" onClick={this.onSpinClick}>Spin</button>
                 </div>
                 <div className="roulette-actions">
                     <ul>
@@ -253,15 +271,13 @@ class RouletteWrapper extends React.Component<any, any> {
                             </Button>
                         </li>
                         {[100, 20, 10, 5].map((chip) => (
-                            <li key={chip} className="board-chip">
-                                <div
-                                    className={this.getChipClasses(chip)}
-                                    onClick={() => this.onChipClick(chip)}
-                                >
+                            <li key={`chip-${chip}`} className="board-chip">
+                                <div className={this.getChipClasses(chip)} onClick={() => this.onChipClick(chip)}>
                                     {chip}
                                 </div>
                             </li>
                         ))}
+
                         <li>
                             <Button
                                 // disabled={this.state.stage !== GameStages.PLACE_BET}

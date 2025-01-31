@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { rouletteData, WheelNumber } from "./Global";
 import "./styles.css";
 
-const Wheel = ( props : {rouletteData : rouletteData, number: WheelNumber}) : JSX.Element => {
+const Wheel = (props: { rouletteData: rouletteData, number: WheelNumber }): JSX.Element => {
   let totalNumbers = 37;
   let singleSpinDuration = 5000;
   let singleRotationDegree = 360 / totalNumbers;
@@ -14,13 +14,16 @@ const Wheel = ( props : {rouletteData : rouletteData, number: WheelNumber}) : JS
   let rouletteWheelNumbers = props.rouletteData.numbers;
   console.log(props.rouletteData);
   console.log(props.number);
+
   const getRouletteIndexFromNumber = (number: string) => {
     return rouletteWheelNumbers.indexOf(parseInt(number));
   };
+  
   const nextNumber = (number: any) => {
     let value = number;
     return value;
   };
+  
   const getRotationFromNumber = (number: string) => {
     let index = getRouletteIndexFromNumber(number);
     return singleRotationDegree * index;
@@ -36,6 +39,7 @@ const Wheel = ( props : {rouletteData : rouletteData, number: WheelNumber}) : JS
 
     return singleRotationDegree * rotateTo;
   };
+
   // calculating where the zero will be at the end of the spin
   // because we are spinning it counter clockwise we are substracting it of 360
   const getZeroEndRotation = (totalRotaiton: number) => {
@@ -43,12 +47,14 @@ const Wheel = ( props : {rouletteData : rouletteData, number: WheelNumber}) : JS
 
     return rotation;
   };
+
   // Where the ball end position should be
   // we are calculating this based on the zero rotation
   // and how much the wheel spins
   const getBallEndRotation = (zeroEndRotation: number, currentNumber: any) => {
     return Math.abs(zeroEndRotation) + getRotationFromNumber(currentNumber);
   };
+
   // randomizing the number of spins that the ball should make
   // so every spin is different
   const getBallNumberOfRotations = (minNumberOfSpins: number, maxNumberOfSpins: number) => {
@@ -83,6 +89,7 @@ const Wheel = ( props : {rouletteData : rouletteData, number: WheelNumber}) : JS
         return lastNumberRotation;
       }
     });
+
     // reset zero
     anime.set(".ball-container", {
       rotate: function () {
@@ -101,7 +108,8 @@ const Wheel = ( props : {rouletteData : rouletteData, number: WheelNumber}) : JS
         lastNumber = currentNumber;
       }
     });
-    // aniamte ball
+
+    // animate ball
     anime({
       targets: ".ball-container",
       translateY: [
@@ -124,27 +132,16 @@ const Wheel = ( props : {rouletteData : rouletteData, number: WheelNumber}) : JS
     }
   }, [props.number]);
 
+  const layers = ['layer-2', 'layer-3', 'layer-4', 'layer-5'];
+
   return (
     <div className={"roulette-wheel"}>
-      <div
-        className={"layer-2 wheel"}
-        style={{ transform: "rotate(0deg)" }}
-      ></div>
-      <div className={"layer-3"}></div>
-      <div
-        className={"layer-4 wheel"}
-        style={{ transform: "rotate(0deg)" }}
-      ></div>
-      <div className={"layer-5"}></div>
+      {layers.map((layer, index) => (
+        <div key={index} className={layer} style={{ transform: "rotate(0deg)" }}></div>
+      ))}
       <div className={"ball-container"} style={{ transform: "rotate(0deg)" }}>
-        <div
-          className={"ball"}
-          style={{ transform: "translate(0, -163.221px)" }}
-        ></div>
+        <div className={"ball"} style={{ transform: "translate(0, -163.221px)" }}></div>
       </div>
-      {/* <svg width="380" height="380">
-        <circle cx="190" cy="190" r="190" style={{touch-action: 'none'}}></circle>
-      </svg> */}
     </div>
   );
 };

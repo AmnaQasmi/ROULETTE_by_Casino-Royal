@@ -1,3 +1,4 @@
+'use client'
 import React from "react";
 import Chip from "./Chip";
 function ChipComponent(props: { currentItemChips: any; tdKey: any; cellClass: any; chipKey: any; cell: any; leftMin: number | undefined; leftMax: number | undefined; topMin: number | undefined; topMax: number | undefined; rowSpan: number | undefined; colSpan: number | undefined; onCellClick: (arg0: any) => void; }) {

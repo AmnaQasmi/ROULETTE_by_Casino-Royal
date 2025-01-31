@@ -1,10 +1,11 @@
 "use client";
 import SideBar from "./SideBar";
 import { useEffect, useState } from "react";
-// import { useMediaQuery } from "@mantine/hooks";
-// import { em } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
+import { em } from "@mantine/core";
 import Image from "next/image";
 import Link from "next/link";
+import './styles.css';
 
 const links = [
   { id: 1, name: "Home", href: "/" },
@@ -37,7 +38,7 @@ const navLinks = (col: boolean, clicked: any) => {
 
 
 const Header = () => {
-  // const isMobile = useMediaQuery(`(max-width: ${em(476)})`);
+  const isMobile = useMediaQuery(`(max-width: ${em(476)})`);
   const [show, setShow] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [shadow, setShadow] = useState(false);

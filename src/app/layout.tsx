@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Inter, Kings } from "next/font/google";
 import "./globals.css";
 import "@mantine/core/styles.css";
-import { MantineProvider, ColorSchemeScript } from "@mantine/core";
+import { MantineProvider } from "@mantine/core";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -16,7 +16,8 @@ const kings = Kings({
   weight: "400",
 });
 
-const metadata: Metadata = {
+// ✅ Correct way to use metadata
+ const metadata: Metadata = {
   title: "Casino Royale",
   description: "Casino Royal showcasing bets and games.",
   openGraph: {
@@ -33,10 +34,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        {/* Mantine script to manage color schemes */}
-        <ColorSchemeScript />
-      </head>
       <body className={`${inter.variable} ${kings.variable} antialiased`}>
         <MantineProvider>
           <div id="app">{children}</div>

@@ -1,22 +1,23 @@
 import { createServer } from "http";
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 import { GameData, GameStages, PlacedChip, ValueType, Winner} from "../src/Components/Global";
 import { Timer } from "easytimer.js";
+// import io from 'socket.io client';
 
 /** Server Handling */
 export const httpServer = createServer();
-const io = new Server(httpServer, {
+export const io = new Server(httpServer, {
   cors: {
     origin: "http://localhost:3000"
   }
 });
-var timer = new Timer();
-var users = new Map<string, string>()
+let timer = new Timer();
+let users = new Map<string, string>()
 let gameData = {} as GameData;
 let usersData = {} as Map<string, PlacedChip[]>;
 let wins = [] as Winner[];
 timer.addEventListener('secondsUpdated', function (e: any) {
-  var currentSeconds = timer.getTimeValues().seconds;
+  let currentSeconds = timer.getTimeValues().seconds;
   gameData.time_remaining = currentSeconds
   if (currentSeconds == 1) {
     console.log("Place bet");
@@ -31,10 +32,10 @@ timer.addEventListener('secondsUpdated', function (e: any) {
     sendStageEvent(gameData)
 
     for(let key of Array.from( usersData.keys()) ) {
-       var username = users.get(key);
+       let username = users.get(key);
        if (username != undefined) {
-        var chipsPlaced = usersData.get(key) as PlacedChip[]
-        var sumWon = calculateWinnings(gameData.value, chipsPlaced)
+        let chipsPlaced = usersData.get(key) as PlacedChip[]
+        let sumWon = calculateWinnings(gameData.value, chipsPlaced)
         wins.push({
             username: username,
             sum: sumWon
@@ -68,7 +69,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on('place-bet', (data: string) => {
-    var gameData = JSON.parse(data) as PlacedChip[]
+    let gameData = JSON.parse(data) as PlacedChip[]
     usersData.set(socket.id, gameData)
   });
   socket.on("disconnect", (reason) => {
@@ -91,23 +92,23 @@ function getRandomNumberInt(min: number, max: number) {
 }
 
 function sendStageEvent(_gameData: GameData) { 
-  var json = JSON.stringify(_gameData)
+  let json = JSON.stringify(_gameData)
   console.log(json)
   io.emit('stage-change', json);
 }
 
-var blackNumbers = [ 2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 29, 28, 31, 33, 35 ];
-var redNumbers = [ 1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36 ];
+let blackNumbers = [ 2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 29, 28, 31, 33, 35 ];
+let redNumbers = [ 1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36 ];
 
 function calculateWinnings(winningNumber: number, placedChips: PlacedChip[]) { 
-  var win = 0;
-  var arrayLength = placedChips.length;
-  for (var i = 0; i < arrayLength; i++) {
+  let win = 0;
+  let arrayLength = placedChips.length;
+  for (let i = 0; i < arrayLength; i++) {
      
-      var placedChip = placedChips[i]
-      var placedChipType = placedChip.item.type
-      var placedChipValue = placedChip.item.value
-      var placedChipSum = placedChip.sum
+      let placedChip = placedChips[i]
+      let placedChipType = placedChip.item.type
+      let placedChipValue = placedChip.item.value
+      let placedChipSum = placedChip.sum
       
       if (placedChipType === ValueType.NUMBER &&  placedChipValue === winningNumber)
       {

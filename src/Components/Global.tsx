@@ -1,28 +1,26 @@
+export interface Item {
+  type: ValueType;
+  value?: number;
+  valueSplit?: number[];
+}
 
 export enum ValueType {
-    NUMBER,
-    NUMBERS_1_12,
-    NUMBERS_2_12,
-    NUMBERS_3_12,
-    NUMBERS_1_18,
-    NUMBERS_19_36,
-    EVEN,
-    ODD,
-    RED,
-    BLACK,
-    DOUBLE_SPLIT,
-    QUAD_SPLIT,
-    TRIPLE_SPLIT,
-    EMPTY
-  }
-  
-  
-  export interface Item {
-    type: ValueType;
-    value: number;
-    valueSplit: number[];
-  }
-  
+  NUMBER = 'NUMBER',
+  EVEN = 'EVEN',
+  ODD = 'ODD',
+  RED = 'RED',
+  BLACK = 'BLACK',
+  NUMBERS_1_12 = 'NUMBERS_1_12',
+  NUMBERS_2_12 = 'NUMBERS_2_12',
+  NUMBERS_3_12 = 'NUMBERS_3_12',
+  NUMBERS_1_18 = 'NUMBERS_1_18',
+  NUMBERS_19_36 = 'NUMBERS_19_36',
+  EMPTY = 'EMPTY',
+  DOUBLE_SPLIT = 'DOUBLE_SPLIT',
+  TRIPLE_SPLIT = 'TRIPLE_SPLIT',
+  QUAD_SPLIT = 'QUAD_SPLIT',
+}
+
   
   export interface PlacedChip {
     item: Item;
@@ -63,6 +61,7 @@ export enum ValueType {
     NONE
   }
   export type GameData = {
+    endTime: number;
     stage: GameStages,
     time_remaining: number;
     value: number;

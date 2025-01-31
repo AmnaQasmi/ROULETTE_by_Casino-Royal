@@ -2,6 +2,14 @@ html,
 body {
   margin: 0;
   padding: 0;
+  
+  background-image: url(../../public/felt.png),
+    -webkit-radial-gradient(50% 40%, circle farthest-corner, #527c14, #243a0a);
+  background-size: 180px 180px, auto;
+  background-attachment: fixed;
+  user-select: none;
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
