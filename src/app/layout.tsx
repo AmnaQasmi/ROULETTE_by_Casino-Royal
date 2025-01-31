@@ -1,5 +1,5 @@
 "use client";
-import type { Metadata } from "next";
+// import type { Metadata } from "next";
 import { Inter, Kings } from "next/font/google";
 import "./globals.css";
 import "@mantine/core/styles.css";
@@ -17,15 +17,15 @@ const kings = Kings({
 });
 
 // ✅ Correct way to use metadata
- const metadata: Metadata = {
-  title: "Casino Royale",
-  description: "Casino Royal showcasing bets and games.",
-  openGraph: {
-    title: "Amna Qasmi Portfolio",
-    description: "Amna's portfolio showcasing web development skills.",
-    images: ["/path-to-image.jpg"],
-  },
-};
+//  const metadata: Metadata = {
+//   title: "Casino Royale",
+//   description: "Casino Royal showcasing bets and games.",
+//   openGraph: {
+//     title: "Amna Qasmi Portfolio",
+//     description: "Amna's portfolio showcasing web development skills.",
+//     images: ["/path-to-image.jpg"],
+//   },
+// };
 
 export default function RootLayout({
   children,

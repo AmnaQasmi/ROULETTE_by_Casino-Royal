@@ -4,11 +4,11 @@ import Chip from "./Chip";
 function ChipComponent(props: { currentItemChips: any; tdKey: any; cellClass: any; chipKey: any; cell: any; leftMin: number | undefined; leftMax: number | undefined; topMin: number | undefined; topMax: number | undefined; rowSpan: number | undefined; colSpan: number | undefined; onCellClick: (arg0: any) => void; }) {
   console.log("Child Render");
 
-  let currentItemChips = props.currentItemChips;
-  let tdKey = props.tdKey;
-  let cellClass = props.cellClass;
-  let chipKey = props.chipKey;
-  let cell = props.cell;
+  const currentItemChips = props.currentItemChips;
+  const tdKey = props.tdKey;
+  const cellClass = props.cellClass;
+  const chipKey = props.chipKey;
+  const cell = props.cell;
 
   let sum = "";
   if (currentItemChips !== undefined) {
@@ -27,7 +27,7 @@ function ChipComponent(props: { currentItemChips: any; tdKey: any; cellClass: an
   if (props.topMin !== undefined && props.topMax !== undefined) {
     top = props.topMin + (props.topMax - props.topMin) / 2;
   }
-  let style = {
+  const style = {
     top: top + "px",
     left: left + "px"
   };
@@ -38,7 +38,7 @@ function ChipComponent(props: { currentItemChips: any; tdKey: any; cellClass: an
       className={cellClass}
       rowSpan={props.rowSpan}
       colSpan={props.colSpan}
-      onClick={(e) => {
+      onClick={() => {
         console.log("click");
         props.onCellClick(cell);
       }}

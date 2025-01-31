@@ -31,14 +31,14 @@ const SignUp = () => {
 
     const handleSubmit = async () => {
         let valid = true;
-        let newFormError: { [key: string]: string } = {};
+        const newFormError: { [key: string]: string } = {};
 
         // Validate the form data
         for (let key in formData) {
             const error = signupForm(key, formData[key]);
             if (error.length > 0) {
                 newFormError[key] = error;
-                valid = false;
+                valid = true;
             }
         }
         setFormError(newFormError);

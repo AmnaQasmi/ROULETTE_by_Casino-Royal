@@ -61,7 +61,7 @@ class RouletteWrapper extends React.Component<any, any> {
         this.socketServer.open();
         this.socketServer.on('stage-change', (data: string) => {
             console.log("Stage Change Data Received:", data);
-            let gameData = JSON.parse(data) as GameData;
+            const gameData = JSON.parse(data) as GameData;
             this.setGameData(gameData);
         });
         this.socketServer.on("connect", () => {
