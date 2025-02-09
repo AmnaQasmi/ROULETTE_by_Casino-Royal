@@ -99,7 +99,10 @@
 // export { loginForm, logout };
 
 
-// happy 
+// happy
+ "use client"; // ✅ Ensure this runs only on the client-side
+
+import { useState, useEffect } from "react";
 import { auth, signInWithEmailAndPassword, updateProfile } from "./firebase";
 
 // 🟢 Login Form Function
@@ -107,7 +110,6 @@ const loginForm = async (name: string, email: string, password: string) => {
   if (!name || !email || !password) return "Name, Email, and Password are required!";
 
   try {
-    // Firebase में साइन इन करें
     const userCredential = await signInWithEmailAndPassword(auth(), email, password);
     const user = userCredential.user;
 
@@ -124,6 +126,51 @@ const loginForm = async (name: string, email: string, password: string) => {
     return error.message;
   }
 };
+
+// 🟢 Next.js React Component
+export default function LoginPage() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    // 🟢 Ensure this runs only on the client-side
+    const form = document.getElementById("loginForm");
+    if (form) {
+      form.addEventListener("submit", handleSubmit);
+    }
+
+    return () => {
+      form?.removeEventListener("submit", handleSubmit);
+    };
+  }, []);
+
+  const handleSubmit = async (e: Event) => {
+    e.preventDefault();
+
+    const nameError = validateInput("name", name);
+    const emailError = validateInput("email", email);
+    const passwordError = validateInput("password", password);
+
+    if (nameError || emailError || passwordError) {
+      console.log("❌ Validation Errors:", { nameError, emailError, passwordError });
+      return;
+    }
+
+    // Login Process
+    const response = await loginForm(name, email, password);
+    console.log(response);
+  };
+
+  return (
+    <form id="loginForm">
+      <input type="text" id="name" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
+      <input type="email" id="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+      <input type="password" id="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      <button type="submit">Login</button>
+    </form>
+  );
+}
 
 // 🟢 Input Validation Function
 const validateInput = (id: string, value: string): string => {
@@ -145,44 +192,4 @@ const validateInput = (id: string, value: string): string => {
       return "";
   }
 };
-
-// 🟢 Form Submission Event Listener
-document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const nameInput = document.getElementById("name") as HTMLInputElement;
-  const emailInput = document.getElementById("email") as HTMLInputElement;
-  const passwordInput = document.getElementById("password") as HTMLInputElement;
-
-  const name = nameInput.value.trim();
-  const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
-
-  // Input Validation
-  const nameError = validateInput("name", name);
-  const emailError = validateInput("email", email);
-  const passwordError = validateInput("password", password);
-
-  if (nameError || emailError || passwordError) {
-    console.log("❌ Validation Errors:", { nameError, emailError, passwordError });
-    return;
-  }
-
-  // Login Process
-  const response = await loginForm(name, email, password);
-  console.log(response);
-});
-
-// 🟢 Logout Function
-// export const logout = async () => {
-//   try {
-//     await auth.signOut();
-//     console.log("🚪 Logged out successfully!");
-//     window.location.href = "/login"; // Redirect to login page
-//   } catch (error: any) {
-//     console.error("❌ Logout Error:", error.message);
-//   }
-// };
-
-// Exporting loginForm
-export { loginForm };
+export {validateInput, loginForm}
