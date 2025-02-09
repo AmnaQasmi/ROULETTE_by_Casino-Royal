@@ -1,5 +1,5 @@
 "use client";
-// import './styles.css';
+import './styles.css';
 import Header from '../../Components/Header';
 import React, { useState, useEffect } from 'react';
 import { IconSend } from '@tabler/icons-react';
