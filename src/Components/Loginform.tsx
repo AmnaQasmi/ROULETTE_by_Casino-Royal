@@ -100,50 +100,32 @@
 
 
 // happy 
-import { auth, signInWithEmailAndPassword } from "./firebase";
+import { auth, signInWithEmailAndPassword, updateProfile } from "./firebase";
 
-const loginForm = async ( name: string, email: string, password: string) => {
-  if (!name ||!email || !password) return "Email and password are required!";
+// 🟢 Login Form Function
+const loginForm = async (name: string, email: string, password: string) => {
+  if (!name || !email || !password) return "Name, Email, and Password are required!";
 
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, name, email, password);
+    // Firebase में साइन इन करें
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
-    
+
+    // Firebase में name अपडेट करें
+    await updateProfile(user, { displayName: name });
+
     console.log("🎉 Login Successful!", user);
-    
+
     // Redirect to home after successful login
     window.location.href = "/";
     return "Login successful!";
-  } catch (error) {
-    // console.error("❌ Login Error:", error.message);
-    // return error.message;
+  } catch (error: any) {
+    console.error("❌ Login Error:", error.message);
+    return error.message;
   }
 };
 
-// Event Listener for Form Submission
-document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  
-  const name = (document.getElementById("name") as HTMLInputElement).value;
-  const email = (document.getElementById("email") as HTMLInputElement).value;
-  const password = (document.getElementById("password") as HTMLInputElement).value;
-  
-  const response = await loginForm(name, email, password);
-  console.log(response);
-});
-
-// Logout Function
-// const logout = async () => {
-//   try {
-//     await signOut(auth);
-//     console.log("🚪 Logged out successfully!");
-//     window.location.href = "/login"; // Redirect to login page
-//   } catch (error) {
-//     console.error("❌ Logout Error:", error.message);
-//   }
-// };
-
-export { loginForm };
+// 🟢 Input Validation Function
 const validateInput = (id: string, value: string): string => {
   switch (id) {
     case "name":
@@ -164,7 +146,7 @@ const validateInput = (id: string, value: string): string => {
   }
 };
 
-// Usage in Form Submission
+// 🟢 Form Submission Event Listener
 document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -172,10 +154,11 @@ document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
   const emailInput = document.getElementById("email") as HTMLInputElement;
   const passwordInput = document.getElementById("password") as HTMLInputElement;
 
-  const name = nameInput.value;
-  const email = emailInput.value;
-  const password = passwordInput.value;
+  const name = nameInput.value.trim();
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
 
+  // Input Validation
   const nameError = validateInput("name", name);
   const emailError = validateInput("email", email);
   const passwordError = validateInput("password", password);
@@ -185,6 +168,21 @@ document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
     return;
   }
 
+  // Login Process
   const response = await loginForm(name, email, password);
   console.log(response);
 });
+
+// 🟢 Logout Function
+// export const logout = async () => {
+//   try {
+//     await auth.signOut();
+//     console.log("🚪 Logged out successfully!");
+//     window.location.href = "/login"; // Redirect to login page
+//   } catch (error: any) {
+//     console.error("❌ Logout Error:", error.message);
+//   }
+// };
+
+// Exporting loginForm
+export { loginForm };
