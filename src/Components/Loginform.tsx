@@ -108,7 +108,7 @@ const loginForm = async (name: string, email: string, password: string) => {
 
   try {
     // Firebase में साइन इन करें
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const userCredential = await signInWithEmailAndPassword(auth(), email, password);
     const user = userCredential.user;
 
     // Firebase में name अपडेट करें
