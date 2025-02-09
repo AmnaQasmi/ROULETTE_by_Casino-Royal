@@ -1,5 +1,6 @@
 "use client";
 // import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/react";
 import { Inter, Kings } from "next/font/google";
 import "./globals.css";
 import "@mantine/core/styles.css";
@@ -36,6 +37,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} ${kings.variable} antialiased`}>
         <MantineProvider>
+        <Analytics/>
           <div id="app">{children}</div>
         </MantineProvider>
       </body>

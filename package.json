@@ -21,6 +21,7 @@
     "@mui/styled-engine-sc": "^6.4.0",
     "@mui/system": "^6.4.0",
     "@tabler/icons-react": "^3.28.1",
+    "@vercel/analytics": "^1.4.1",
     "animejs": "^3.2.2",
     "aos": "^3.0.0-beta.6",
     "autoprefixer": "^10.4.20",
