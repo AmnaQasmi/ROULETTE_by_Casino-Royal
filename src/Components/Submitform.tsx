@@ -1,3 +1,4 @@
+'use client'
 const submitForm=(id:string, value:any)=>{
     switch(id){
         case 'name':

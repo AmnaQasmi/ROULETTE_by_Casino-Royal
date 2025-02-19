@@ -1,3 +1,4 @@
+'use client'
 const SubmitInput = (props: any) => {
   return (
     <div>

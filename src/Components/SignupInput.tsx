@@ -1,3 +1,4 @@
+'use client'
 const SignupInput = (props: any) => {
     return (
       <div>

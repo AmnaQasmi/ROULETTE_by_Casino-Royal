@@ -30,6 +30,7 @@
 // export {signupForm};
 
 // Signup Data Store & Validation
+'use client'
 import { useEffect } from "react";
 
 const handleSignup = (userData: any) => {
